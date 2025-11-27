@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:lista_zakupow.ViewModels"
+             x:Class="lista_zakupow.Views.ShoppingListPage"
+             Title="Lista zakupow">
+    <ContentPage.BindingContext>
+        <viewModels:ShoppingListViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="16" RowSpacing="10">
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
+            <Label Text="Dodaj produkt" FontAttributes="Bold" TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+            <Entry Placeholder="Nazwa" Text="{Binding NewItemName}" />
+            <Entry Placeholder="Cena" Keyboard="Numeric" Text="{Binding NewItemPrice}" />
+            <Button Text="Dodaj" Command="{Binding AddItemCommand}" />
+            <Label Text="Produkty" FontAttributes="Bold" Margin="0,12,0,0" TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+        </VerticalStackLayout>
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Items}" VerticalOptions="FillAndExpand">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*,Auto" Padding="8" BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2A2A2A}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Name}" TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                            <Label Text="{Binding Price, StringFormat='Cena: {0:C}'}" FontSize="12" TextColor="{AppThemeBinding Light=Gray, Dark=#CCCCCC}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1" Text="Usun" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteItemCommand}" CommandParameter="{Binding .}" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <Label Text="Brak produktow" HorizontalOptions="Center" TextColor="{AppThemeBinding Light=Gray, Dark=#CCCCCC}" />
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <VerticalStackLayout Grid.Row="2" Spacing="6">
+            <Label Text="{Binding Total, StringFormat='Suma: {0:C}'}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+            <Label Text="Wojciech Koperski" HorizontalOptions="Center" TextColor="{AppThemeBinding Light=Gray, Dark=#CCCCCC}" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

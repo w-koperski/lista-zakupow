@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Maui.Hosting;
+using Microsoft.Extensions.Logging;
+using lista_zakupow.Views;
+using lista_zakupow.ViewModels;
 
 namespace lista_zakupow
 {
@@ -12,12 +15,15 @@ namespace lista_zakupow
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("OpenSans-SemiBold.ttf", "OpenSansSemiBold");
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+                builder.Logging.AddDebug();
 #endif
+            // Register VM for DI (optional if using XAML new object)
+            builder.Services.AddTransient<ShoppingListViewModel>();
+            builder.Services.AddTransient<ShoppingListPage>();
 
             return builder.Build();
         }
