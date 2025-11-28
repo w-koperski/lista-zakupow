@@ -1,4 +1,4 @@
-name: .NET MAUI Build
+name: .NET MAUI Windows + Android Build
 
 on:
   push:
@@ -7,15 +7,14 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build-maui-windows:
-    # Windows runner can build Android and MacCatalyst
+  build-maui-windows-android:
     runs-on: windows-latest
 
     strategy:
       matrix:
         target:
           - net10.0-android
-          - net10.0-maccatalyst
+          - net10.0-windows10.0.19041.0
 
     steps:
       - name: Checkout
@@ -37,43 +36,6 @@ jobs:
         run: dotnet build lista-zakupow/lista-zakupow.csproj -c Release -f ${{ matrix.target }} --no-restore
 
       - name: Publish MAUI app
-        run: dotnet publish lista-zakupow/lista-zakupow.csproj -c Release -f ${{ matrix.target }} -o ./artifacts/${{ matrix.target }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.target }}-artifacts
-          path: ./artifacts/${{ matrix.target }}
-
-  build-maui-ios:
-    # iOS must run on macOS
-    runs-on: macos-latest
-
-    strategy:
-      matrix:
-        target:
-          - net10.0-ios
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET 10 SDK (preview)
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.0.x
-          include-prerelease: true
-
-      - name: Install .NET MAUI workload
-        run: dotnet workload install maui
-
-      - name: Restore
-        run: dotnet restore lista-zakupow.slnx
-
-      - name: Build MAUI iOS app
-        run: dotnet build lista-zakupow/lista-zakupow.csproj -c Release -f ${{ matrix.target }} --no-restore
-
-      - name: Publish MAUI iOS app
         run: dotnet publish lista-zakupow/lista-zakupow.csproj -c Release -f ${{ matrix.target }} -o ./artifacts/${{ matrix.target }}
 
       - name: Upload artifacts
