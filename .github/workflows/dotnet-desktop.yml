@@ -27,16 +27,51 @@ jobs:
           include-prerelease: true
 
       - name: Install .NET MAUI workload
-        run: dotnet workload install maui
+        run: dotnet workload install maui --ignore-failed-sources
 
-      - name: Restore
-        run: dotnet restore lista-zakupow.slnx
+      # Restore separately for each target so we can pass RID for Windows
+      - name: Restore for target
+        run: |
+          if ('${{ matrix.target }}' -eq 'net10.0-windows10.0.19041.0') {
+            dotnet restore lista-zakupow.slnx -r win-x64
+          }
+          else {
+            dotnet restore lista-zakupow.slnx
+          }
 
       - name: Build MAUI app
-        run: dotnet build lista-zakupow/lista-zakupow.csproj -c Release -f ${{ matrix.target }} --no-restore
+        run: |
+          if ('${{ matrix.target }}' -eq 'net10.0-windows10.0.19041.0') {
+            dotnet build lista-zakupow/lista-zakupow.csproj `
+              -c Release `
+              -f ${{ matrix.target }} `
+              -r win-x64 `
+              --no-restore
+          }
+          else {
+            dotnet build lista-zakupow/lista-zakupow.csproj `
+              -c Release `
+              -f ${{ matrix.target }} `
+              --no-restore
+          }
 
       - name: Publish MAUI app
-        run: dotnet publish lista-zakupow/lista-zakupow.csproj -c Release -f ${{ matrix.target }} -o ./artifacts/${{ matrix.target }}
+        run: |
+          if ('${{ matrix.target }}' -eq 'net10.0-windows10.0.19041.0') {
+            dotnet publish lista-zakupow/lista-zakupow.csproj `
+              -c Release `
+              -f ${{ matrix.target }} `
+              -r win-x64 `
+              -o ./artifacts/${{ matrix.target }}/win-x64 `
+              --no-restore
+          }
+          else {
+            dotnet publish lista-zakupow/lista-zakupow.csproj `
+              -c Release `
+              -f ${{ matrix.target }} `
+              -o ./artifacts/${{ matrix.target }} `
+              --no-restore
+          }
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
